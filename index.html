@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1C1C1C">
+<title>Safety & Security · Tarjetas</title>
+<style>
+  :root{
+    --red:#E31C23;
+    --red-dark:#A81118;
+    --ink:#1C1C1C;
+    --paper:#FAFAF9;
+    --card:#FFFFFF;
+    --line:#DEDBD2;
+    --muted:#6B6862;
+    --accent:#FFCC00;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;min-height:100%;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  body{min-height:100vh;display:flex;flex-direction:column;}
+
+  .top{background:var(--ink);color:#fff;padding:22px 18px 20px;text-align:center;
+    border-bottom:4px solid var(--red);}
+  .top .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#B9B6AE;}
+  .top h1{margin:6px 0 0;font-family:"Arial Black",Impact,sans-serif;font-weight:900;
+    font-size:24px;letter-spacing:.03em;text-transform:uppercase;}
+  .top p{margin:6px 0 0;font-size:13px;color:#B9B6AE;}
+
+  main{flex:1;width:100%;max-width:560px;margin:0 auto;padding:22px 16px 28px;
+    display:flex;flex-direction:column;gap:16px;}
+  .lead{margin:0 0 2px;text-align:center;font-size:14px;color:var(--muted);}
+
+  .choice{display:flex;align-items:center;gap:16px;text-decoration:none;color:var(--ink);
+    background:var(--card);border:1px solid var(--line);border-left:8px solid var(--red);
+    border-radius:14px;padding:20px 18px;box-shadow:0 1px 3px rgba(0,0,0,.06);
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;}
+  .choice:hover{box-shadow:0 4px 14px rgba(0,0,0,.12);}
+  .choice:active{transform:scale(.985);}
+  .choice:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+  .choice .icon{flex:0 0 auto;width:68px;height:68px;display:flex;align-items:center;justify-content:center;}
+  .choice .icon svg{width:100%;height:100%;display:block;}
+  .choice .txt{flex:1;min-width:0;}
+  .choice .name{font-family:"Arial Black",Impact,sans-serif;font-weight:900;font-size:19px;
+    letter-spacing:.02em;text-transform:uppercase;line-height:1.15;}
+  .choice .desc{margin-top:5px;font-size:13px;line-height:1.35;color:var(--muted);}
+  .choice .code{margin-top:7px;display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;
+    font-size:10.5px;color:var(--red-dark);background:#FCE3E2;border-radius:4px;padding:2px 7px;}
+  .choice .arrow{flex:0 0 auto;font-size:26px;color:var(--red);font-weight:700;}
+
+  .choice.sec{border-left-color:var(--ink);}
+  .choice.sec .arrow{color:var(--ink);}
+  .choice.sec .code{color:var(--ink);background:#EDEBE5;}
+
+  footer{text-align:center;font-size:11px;color:var(--muted);padding:0 16px 22px;}
+  @media (max-width:360px){
+    .choice{padding:16px 14px;gap:12px;}
+    .choice .icon{width:54px;height:54px;}
+    .choice .name{font-size:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="eyebrow">Prevención de Pérdidas y Seguridad</div>
+  <h1>Tarjetas de Seguridad</h1>
+  <p>Seleccione la tarjeta que desea realizar</p>
+</div>
+
+<main>
+  <p class="lead">¿Qué tarjeta quiere completar ahora?</p>
+
+  <a class="choice" href="stop.html">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 100 100"><polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" fill="#E31C23"/>
+        <text x="50" y="48" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="22" fill="#fff">STOP</text>
+        <text x="50" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#fff">por seguridad</text>
+      </svg>
+    </div>
+    <div class="txt">
+      <div class="name">Tarjeta STOP</div>
+      <div class="desc">Observación de seguridad: actos seguros e inseguros de las personas.</div>
+      <span class="code">SI-006 · Observación</span>
+    </div>
+    <div class="arrow" aria-hidden="true">&rsaquo;</div>
+  </a>
+
+  <a class="choice sec" href="seguridad.html">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <rect x="4" y="4" width="92" height="92" rx="18" fill="#1C1C1C"/>
+        <path d="M50 17 L77 28 V50 C77 67 65 78 50 84 C35 78 23 67 23 50 V28 Z" fill="#FFCC00"/>
+        <path d="M50 30 V62 M50 70 V72" stroke="#1C1C1C" stroke-width="8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="txt">
+      <div class="name">Tarjeta de Seguridad</div>
+      <div class="desc">Aviso de peligro o condición insegura detectada, con prioridad y acción propuesta.</div>
+      <span class="code">TS3101 · Aviso</span>
+    </div>
+    <div class="arrow" aria-hidden="true">&rsaquo;</div>
+  </a>
+</main>
+
+<footer>Cada tarjeta guarda y envía sus datos por separado.</footer>
+
+</body>
+</html>
