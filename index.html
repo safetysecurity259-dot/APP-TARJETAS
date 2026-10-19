@@ -7,58 +7,175 @@
 <title>Safety & Security · Tarjetas</title>
 <style>
   :root{
-    --red:#E31C23;
-    --red-dark:#A81118;
-    --ink:#1C1C1C;
-    --paper:#FAFAF9;
-    --card:#FFFFFF;
-    --line:#DEDBD2;
-    --muted:#6B6862;
+    color-scheme: light;
+    --page:#f9f9f7;
+    --surface:#fcfcfb;
+    --text:#0b0b0b;
+    --text2:#52514e;
+    --muted:#898781;
+    --grid:#e1e0d9;
+    --axis:#c3c2b7;
+    --border:rgba(11,11,11,.10);
+    --wash:rgba(11,11,11,.06);
+    --s-stop:#2a78d6;      /* categoría 1: Tarjeta STOP */
+    --s-seg:#eb6834;       /* categoría 2: Tarjeta de Seguridad */
+    --s-other:#b9b6ae;
+    --brand:#E31C23;
+    --brand-dark:#A81118;
     --accent:#FFCC00;
+    --warn-bg:#FFF6D6; --warn-ink:#6b5200; --warn-line:#f0d98a;
+    --err-bg:#FDECEC; --err-ink:#8a1519; --err-line:#f3bcbc;
   }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --page:#0d0d0d; --surface:#1a1a19; --text:#f0efec; --text2:#c3c2b7; --muted:#898781;
+      --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --wash:rgba(255,255,255,.07);
+      --s-stop:#3987e5; --s-seg:#d95926; --s-other:#5d5b55;
+      --warn-bg:#2b2410; --warn-ink:#f1d98a; --warn-line:#5a4a14;
+      --err-bg:#2c1414; --err-ink:#f3b3b3; --err-line:#6b2a2a;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --text:#f0efec; --text2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10); --wash:rgba(255,255,255,.07);
+    --s-stop:#3987e5; --s-seg:#d95926; --s-other:#5d5b55;
+    --warn-bg:#2b2410; --warn-ink:#f1d98a; --warn-line:#5a4a14;
+    --err-bg:#2c1414; --err-ink:#f3b3b3; --err-line:#6b2a2a;
+  }
+
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;min-height:100%;background:var(--paper);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  html,body{margin:0;padding:0;background:var(--page);color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
   body{min-height:100vh;display:flex;flex-direction:column;}
+  button{font:inherit;color:inherit;}
 
-  .top{background:var(--ink);color:#fff;padding:22px 18px 20px;text-align:center;
-    border-bottom:4px solid var(--red);}
+  .top{background:#1C1C1C;color:#fff;padding:20px 18px 18px;text-align:center;border-bottom:4px solid var(--brand);}
   .top .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#B9B6AE;}
-  .top h1{margin:6px 0 0;font-family:"Arial Black",Impact,sans-serif;font-weight:900;
-    font-size:24px;letter-spacing:.03em;text-transform:uppercase;}
-  .top p{margin:6px 0 0;font-size:13px;color:#B9B6AE;}
+  .top h1{margin:6px 0 0;font-family:"Arial Black",Impact,sans-serif;font-weight:900;font-size:24px;letter-spacing:.03em;text-transform:uppercase;}
 
-  main{flex:1;width:100%;max-width:560px;margin:0 auto;padding:22px 16px 28px;
-    display:flex;flex-direction:column;gap:16px;}
-  .lead{margin:0 0 2px;text-align:center;font-size:14px;color:var(--muted);}
+  main{flex:1;width:100%;max-width:1080px;margin:0 auto;padding:20px 16px 12px;}
 
-  .choice{display:flex;align-items:center;gap:16px;text-decoration:none;color:var(--ink);
-    background:var(--card);border:1px solid var(--line);border-left:8px solid var(--red);
-    border-radius:14px;padding:20px 18px;box-shadow:0 1px 3px rgba(0,0,0,.06);
-    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;}
-  .choice:hover{box-shadow:0 4px 14px rgba(0,0,0,.12);}
+  /* ---------- Menú: elegir tarjeta ---------- */
+  .menu-title{margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);}
+  .menu{display:grid;grid-template-columns:1fr;gap:12px;}
+  @media (min-width:720px){ .menu{grid-template-columns:1fr 1fr;} }
+  .choice{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--text);
+    background:var(--surface);border:1px solid var(--border);border-left:8px solid var(--brand);
+    border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);
+    transition:transform .12s ease, box-shadow .12s ease;}
+  .choice:hover{box-shadow:0 4px 14px rgba(0,0,0,.14);}
   .choice:active{transform:scale(.985);}
   .choice:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
-  .choice .icon{flex:0 0 auto;width:68px;height:68px;display:flex;align-items:center;justify-content:center;}
+  .choice .icon{flex:0 0 auto;width:56px;height:56px;}
   .choice .icon svg{width:100%;height:100%;display:block;}
   .choice .txt{flex:1;min-width:0;}
-  .choice .name{font-family:"Arial Black",Impact,sans-serif;font-weight:900;font-size:19px;
-    letter-spacing:.02em;text-transform:uppercase;line-height:1.15;}
-  .choice .desc{margin-top:5px;font-size:13px;line-height:1.35;color:var(--muted);}
-  .choice .code{margin-top:7px;display:inline-block;font-family:"SFMono-Regular",Consolas,monospace;
-    font-size:10.5px;color:var(--red-dark);background:#FCE3E2;border-radius:4px;padding:2px 7px;}
-  .choice .arrow{flex:0 0 auto;font-size:26px;color:var(--red);font-weight:700;}
+  .choice .name{font-family:"Arial Black",Impact,sans-serif;font-weight:900;font-size:17px;letter-spacing:.02em;text-transform:uppercase;line-height:1.15;}
+  .choice .desc{margin-top:4px;font-size:13px;line-height:1.35;color:var(--text2);}
+  .choice .code{margin-top:6px;display:inline-block;font-family:ui-monospace,Consolas,monospace;font-size:10.5px;
+    color:var(--brand-dark);background:rgba(227,28,35,.12);border-radius:4px;padding:2px 7px;}
+  .choice .arrow{flex:0 0 auto;font-size:26px;color:var(--brand);font-weight:700;}
+  .choice.sec{border-left-color:var(--text);}
+  .choice.sec .arrow{color:var(--text);}
+  .choice.sec .code{color:var(--text);background:var(--wash);}
+  @media (prefers-color-scheme: dark){ :root:where(:not([data-theme="light"])) .choice .code{color:#ff8b90;} :root:where(:not([data-theme="light"])) .choice.sec .code{color:var(--text);} }
 
-  .choice.sec{border-left-color:var(--ink);}
-  .choice.sec .arrow{color:var(--ink);}
-  .choice.sec .code{color:var(--ink);background:#EDEBE5;}
+  /* ---------- Panel ---------- */
+  .panel-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:30px 0 12px;
+    padding-top:22px;border-top:1px solid var(--grid);}
+  .panel-h h2{margin:0;font-size:20px;letter-spacing:.01em;}
+  .panel-h .meta{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .chip-demo{background:var(--accent);color:#1C1C1C;font-weight:800;font-size:10.5px;letter-spacing:.06em;
+    text-transform:uppercase;border-radius:5px;padding:3px 8px;}
+  .btn-sm{border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:6px 11px;font-size:12.5px;font-weight:600;cursor:pointer;}
+  .btn-sm:hover{background:var(--wash);}
+  .btn-sm:focus-visible,.seg button:focus-visible,.tgl:focus-visible,.hit:focus-visible,.hrow:focus-visible,.dates input:focus-visible{outline:3px solid var(--accent);outline-offset:1px;}
 
-  footer{text-align:center;font-size:11px;color:var(--muted);padding:0 16px 22px;}
-  @media (max-width:360px){
-    .choice{padding:16px 14px;gap:12px;}
-    .choice .icon{width:54px;height:54px;}
-    .choice .name{font-size:16px;}
-  }
+  /* filtros: una sola fila sobre los gráficos */
+  .filters{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:flex-end;margin-bottom:14px;
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;}
+  .fgroup{display:flex;flex-direction:column;gap:5px;min-width:0;}
+  .fgroup > .lbl{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--text2);font-weight:700;}
+  .seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--page);}
+  .seg button{border:0;background:transparent;padding:8px 11px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    border-right:1px solid var(--border);color:var(--text2);}
+  .seg button:last-child{border-right:0;}
+  .seg button:hover{background:var(--wash);}
+  .seg button[aria-pressed="true"]{background:var(--text);color:var(--page);font-weight:700;}
+  .sw{display:inline-block;width:10px;height:10px;border-radius:2px;flex:0 0 auto;}
+  .dates{display:flex;gap:8px;align-items:center;}
+  .dates input{border:1px solid var(--border);background:var(--page);color:var(--text);border-radius:8px;padding:7px 8px;font:inherit;font-size:13px;min-width:0;}
+  .dates span{color:var(--muted);font-size:12px;}
+
+  .notice{border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;
+    border:1px solid var(--warn-line);background:var(--warn-bg);color:var(--warn-ink);}
+  .notice.err{border-color:var(--err-line);background:var(--err-bg);color:var(--err-ink);}
+  .notice .msg{flex:1 1 260px;line-height:1.4;}
+  .notice .acts{display:flex;gap:8px;flex-wrap:wrap;}
+  .notice .btn-sm{background:transparent;border-color:currentColor;}
+
+  /* KPIs */
+  .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+  @media (min-width:720px){ .kpis{grid-template-columns:1.4fr 1fr 1fr 1fr;} }
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;min-width:0;}
+  .kpi .k-l{font-size:12.5px;color:var(--text2);display:flex;align-items:center;gap:7px;}
+  .kpi .k-v{font-size:28px;font-weight:650;line-height:1.1;margin-top:6px;}
+  .kpi.hero .k-v{font-size:48px;font-weight:700;line-height:1;}
+  .kpi .k-d{font-size:12px;color:var(--text2);margin-top:6px;min-height:15px;}
+  .kpi[hidden]{display:none;}
+
+  /* tarjetas de gráfico */
+  .grid{display:grid;grid-template-columns:1fr;gap:12px;}
+  @media (min-width:900px){ .grid{grid-template-columns:1fr 1fr;} .grid .wide{grid-column:1 / -1;} }
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 14px 12px;min-width:0;position:relative;}
+  .card[hidden]{display:none;}
+  .card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
+  .card-h h3{margin:0;font-size:15px;font-weight:700;}
+  .card-h .sub{margin:3px 0 0;font-size:12px;color:var(--text2);line-height:1.35;}
+  .tgl{flex:0 0 auto;border:1px solid var(--border);background:transparent;border-radius:7px;padding:5px 9px;font-size:12px;cursor:pointer;color:var(--text2);}
+  .tgl:hover{background:var(--wash);}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--text2);margin:0 0 6px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend .sw{width:12px;height:12px;border-radius:3px;}
+  .plot{transition:opacity .15s;}
+  .loading .plot, .loading .kpis{opacity:.55;}
+  .empty{padding:36px 8px;text-align:center;color:var(--text2);font-size:13px;}
+
+  svg.chart{display:block;width:100%;height:auto;overflow:visible;}
+  svg.chart text{font-family:inherit;}
+  .hit{fill:transparent;cursor:default;outline:none;}
+  .hit:hover,.hit:focus{fill:var(--wash);}
+
+  /* barras horizontales */
+  .hlist{display:flex;flex-direction:column;gap:2px;}
+  .hrow{display:grid;grid-template-columns:minmax(84px,38%) 1fr;gap:10px;align-items:center;padding:5px 4px;border-radius:6px;outline:none;}
+  .hrow:hover,.hrow:focus{background:var(--wash);}
+  .hrow .hl{font-size:12.5px;line-height:1.25;color:var(--text2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;}
+  .hrow .tr{display:flex;align-items:center;gap:7px;min-width:0;}
+  .hrow .hb{display:flex;gap:2px;height:14px;width:calc((100% - 34px) * var(--p));min-width:4px;}
+  .hrow .hb i{display:block;height:100%;min-width:2px;}
+  .hrow .hb i:last-child{border-radius:0 4px 4px 0;}
+  .hrow .hv{font-size:12.5px;font-weight:650;min-width:22px;}
+  .hrow.zero .hv{color:var(--muted);font-weight:500;}
+
+  table.t{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.t th,table.t td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--grid);}
+  table.t th{color:var(--text2);font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;}
+  table.t td.n,table.t th.n{text-align:right;font-variant-numeric:tabular-nums;}
+  .tblwrap{max-height:320px;overflow:auto;}
+
+  #tip{position:fixed;z-index:50;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--axis);
+    border-radius:9px;padding:8px 10px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.18);max-width:280px;display:none;}
+  #tip .tt{font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.3;}
+  #tip .tr{display:flex;align-items:center;gap:8px;line-height:1.5;}
+  #tip .tr .ln{width:10px;height:3px;border-radius:2px;flex:0 0 auto;}
+  #tip .tr b{font-weight:700;min-width:18px;}
+  #tip .tr span{color:var(--text2);}
+
+  footer{text-align:center;font-size:11px;color:var(--muted);padding:6px 16px 22px;}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+  @media (max-width:360px){ .choice{padding:14px 12px;gap:10px;} .choice .icon{width:48px;height:48px;} .choice .name{font-size:15px;} }
 </style>
 </head>
 <body>
@@ -66,45 +183,812 @@
 <div class="top">
   <div class="eyebrow">Prevención de Pérdidas y Seguridad</div>
   <h1>Tarjetas de Seguridad</h1>
-  <p>Seleccione la tarjeta que desea realizar</p>
 </div>
 
 <main>
-  <p class="lead">¿Qué tarjeta quiere completar ahora?</p>
+  <!-- ===== Elegir tarjeta ===== -->
+  <h2 class="menu-title">¿Qué tarjeta quiere completar?</h2>
+  <div class="menu">
+    <a class="choice" href="stop.html">
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 100 100"><polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" fill="#E31C23"/>
+          <text x="50" y="48" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="22" fill="#fff">STOP</text>
+          <text x="50" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#fff">por seguridad</text>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="name">Tarjeta STOP</div>
+        <div class="desc">Observación de seguridad: actos seguros e inseguros de las personas.</div>
+        <span class="code">SI-006 · Observación</span>
+      </div>
+      <div class="arrow" aria-hidden="true">&rsaquo;</div>
+    </a>
 
-  <a class="choice" href="stop.html">
-    <div class="icon" aria-hidden="true">
-      <svg viewBox="0 0 100 100"><polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" fill="#E31C23"/>
-        <text x="50" y="48" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="22" fill="#fff">STOP</text>
-        <text x="50" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#fff">por seguridad</text>
-      </svg>
-    </div>
-    <div class="txt">
-      <div class="name">Tarjeta STOP</div>
-      <div class="desc">Observación de seguridad: actos seguros e inseguros de las personas.</div>
-      <span class="code">SI-006 · Observación</span>
-    </div>
-    <div class="arrow" aria-hidden="true">&rsaquo;</div>
-  </a>
+    <a class="choice sec" href="seguridad.html">
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <rect x="4" y="4" width="92" height="92" rx="18" fill="#1C1C1C"/>
+          <path d="M50 17 L77 28 V50 C77 67 65 78 50 84 C35 78 23 67 23 50 V28 Z" fill="#FFCC00"/>
+          <path d="M50 30 V62 M50 70 V72" stroke="#1C1C1C" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <div class="name">Tarjeta de Seguridad</div>
+        <div class="desc">Aviso de peligro o condición insegura detectada, con prioridad y acción propuesta.</div>
+        <span class="code">TS3101 · Aviso</span>
+      </div>
+      <div class="arrow" aria-hidden="true">&rsaquo;</div>
+    </a>
+  </div>
 
-  <a class="choice sec" href="seguridad.html">
-    <div class="icon" aria-hidden="true">
-      <svg viewBox="0 0 100 100">
-        <rect x="4" y="4" width="92" height="92" rx="18" fill="#1C1C1C"/>
-        <path d="M50 17 L77 28 V50 C77 67 65 78 50 84 C35 78 23 67 23 50 V28 Z" fill="#FFCC00"/>
-        <path d="M50 30 V62 M50 70 V72" stroke="#1C1C1C" stroke-width="8" stroke-linecap="round"/>
-      </svg>
+  <!-- ===== Panel ===== -->
+  <div class="panel-h">
+    <h2>Panel de tarjetas</h2>
+    <div class="meta">
+      <span id="demoChip" class="chip-demo" hidden>Datos de ejemplo · no son reales</span>
+      <span id="updated"></span>
+      <button class="btn-sm" id="btnRefresh" type="button">Actualizar</button>
+      <button class="btn-sm" id="btnExitDemo" type="button" hidden>Salir del ejemplo</button>
     </div>
-    <div class="txt">
-      <div class="name">Tarjeta de Seguridad</div>
-      <div class="desc">Aviso de peligro o condición insegura detectada, con prioridad y acción propuesta.</div>
-      <span class="code">TS3101 · Aviso</span>
+  </div>
+
+  <div id="notice" role="status" aria-live="polite"></div>
+
+  <div class="filters" role="group" aria-label="Filtros del panel">
+    <div class="fgroup">
+      <span class="lbl">Período</span>
+      <div class="seg" id="segPreset">
+        <button type="button" data-p="today" aria-pressed="false">Hoy</button>
+        <button type="button" data-p="7" aria-pressed="false">7 días</button>
+        <button type="button" data-p="30" aria-pressed="true">30 días</button>
+        <button type="button" data-p="90" aria-pressed="false">90 días</button>
+        <button type="button" data-p="month" aria-pressed="false">Este mes</button>
+        <button type="button" data-p="all" aria-pressed="false">Todo</button>
+      </div>
     </div>
-    <div class="arrow" aria-hidden="true">&rsaquo;</div>
-  </a>
+    <div class="fgroup">
+      <span class="lbl">Rango personalizado</span>
+      <div class="dates">
+        <input type="date" id="dFrom" aria-label="Desde">
+        <span>a</span>
+        <input type="date" id="dTo" aria-label="Hasta">
+      </div>
+    </div>
+    <div class="fgroup">
+      <span class="lbl">Tipo de tarjeta</span>
+      <div class="seg" id="segTipo">
+        <button type="button" data-t="all" aria-pressed="true">Todas</button>
+        <button type="button" data-t="stop" aria-pressed="false"><i class="sw" style="background:var(--s-stop)"></i>STOP</button>
+        <button type="button" data-t="seg" aria-pressed="false"><i class="sw" style="background:var(--s-seg)"></i>Seguridad</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dash">
+    <div class="kpis">
+      <div class="kpi hero" id="kTotal"><div class="k-l">Total de tarjetas</div><div class="k-v" id="vTotal">–</div><div class="k-d" id="dTotal"></div></div>
+      <div class="kpi" id="kStop"><div class="k-l"><i class="sw" style="background:var(--s-stop)"></i>Tarjetas STOP</div><div class="k-v" id="vStop">–</div><div class="k-d" id="dStop"></div></div>
+      <div class="kpi" id="kSeg"><div class="k-l"><i class="sw" style="background:var(--s-seg)"></i>Tarjetas de Seguridad</div><div class="k-v" id="vSeg">–</div><div class="k-d" id="dSeg"></div></div>
+      <div class="kpi" id="kPeople"><div class="k-l">Personas que emitieron</div><div class="k-v" id="vPeople">–</div><div class="k-d" id="dPeople"></div></div>
+    </div>
+
+    <div class="grid">
+      <section class="card wide" id="cDay">
+        <header class="card-h">
+          <div><h3 id="tDay">Tarjetas por día</h3><p class="sub" id="sDay"></p></div>
+          <button class="tgl" type="button" data-for="day" aria-pressed="false">Ver tabla</button>
+        </header>
+        <div class="legend" id="lgDay"></div>
+        <div class="plot" id="pDay"></div>
+        <div class="tblwrap" id="tDayTbl" hidden></div>
+      </section>
+
+      <section class="card" id="cPerson">
+        <header class="card-h">
+          <div><h3>Tarjetas por persona</h3><p class="sub" id="sPerson"></p></div>
+          <button class="tgl" type="button" data-for="person" aria-pressed="false">Ver tabla</button>
+        </header>
+        <div class="legend" id="lgPerson"></div>
+        <div class="plot" id="pPerson"></div>
+        <div class="tblwrap" id="tPersonTbl" hidden></div>
+      </section>
+
+      <section class="card" id="cActs">
+        <header class="card-h">
+          <div><h3>Actos inseguros más detectados</h3><p class="sub" id="sActs">Tarjeta STOP</p></div>
+          <button class="tgl" type="button" data-for="acts" aria-pressed="false">Ver tabla</button>
+        </header>
+        <div class="plot" id="pActs"></div>
+        <div class="tblwrap" id="tActsTbl" hidden></div>
+      </section>
+
+      <section class="card wide" id="cCond">
+        <header class="card-h">
+          <div><h3>Condiciones detectadas</h3><p class="sub" id="sCond">Tarjeta de Seguridad · recuento por condición</p></div>
+          <button class="tgl" type="button" data-for="cond" aria-pressed="false">Ver tabla</button>
+        </header>
+        <div class="plot" id="pCond"></div>
+        <div class="tblwrap" id="tCondTbl" hidden></div>
+      </section>
+    </div>
+  </div>
 </main>
 
-<footer>Cada tarjeta guarda y envía sus datos por separado.</footer>
+<footer>Cada tarjeta guarda y envía sus datos por separado. El panel se actualiza al abrir la página.</footer>
+<div id="tip" role="tooltip"></div>
 
+<script>
+/* =====================================================================
+   CONFIGURACIÓN — de dónde salen los datos del panel
+   Cada script de Google debe responder a  ?accion=listar  con:
+     { ok:true, tarjetas:[ {...}, {...} ] }
+   (el código para agregarlo está en apps-script-panel.gs)
+   ===================================================================== */
+const SOURCES = {
+  stop: { label:'Tarjeta STOP',
+          url:'https://script.google.com/macros/s/AKfycbxWZUIm_l5_UgwpmwqMDM4Osfh6fK_OkhVyY0xikgNgZK5toBErAhT4sfYwR9OUtfC6/exec' },
+  seg:  { label:'Tarjeta de Seguridad',
+          url:'https://script.google.com/macros/s/AKfycbwJ_t3ziMYVSO5H0EpdOgMDdgBN9Uks97qBkFIbzXzoipQ5S7OcD1TFFWsODSruBmbq/exec' }
+};
+const TZ = 'America/Santiago';
+const CACHE_KEY = 'panel_tarjetas_cache_v1';
+const PREFS_KEY = 'panel_tarjetas_filtros_v1';
+
+/* Catálogos (los mismos textos que usan las apps) */
+const SECTION_TITLES = {
+  reacciones:'Reacciones de las personas', epp:'Equipo de protección personal',
+  posiciones:'Posiciones de las personas', herramientas:'Herramientas y equipo',
+  procedimientos:'Procedimientos, orden y limpieza'
+};
+const CONDICIONES = [
+  'Pallet con riesgo de caída','Obstrucción extintor','Obstrucción red húmeda',
+  'Obstrucción pulsador emergencia','Obstrucción vía de evacuación','Enchufe mal estado',
+  'Herramienta dañada','Equipo de levante con daño'
+];
+
+/* =====================================================================
+   Utilidades
+   ===================================================================== */
+const $ = (s, r=document) => r.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  if(attrs) for(const k in attrs){ if(k==='class') e.className = attrs[k]; else if(k==='style') e.style.cssText = attrs[k]; else e.setAttribute(k, attrs[k]); }
+  kids.forEach(k => { if(k!=null) e.append(k.nodeType ? k : document.createTextNode(String(k))); });
+  return e;
+}
+function sv(tag, attrs){
+  const e = document.createElementNS(NS, tag);
+  if(attrs) for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+const fmtN = n => n.toLocaleString('es-CL');
+
+function todayKey(){ return new Date().toLocaleDateString('en-CA', {timeZone:TZ}); }
+function addDays(key, n){
+  const [y,m,d] = key.split('-').map(Number);
+  return new Date(Date.UTC(y, m-1, d+n)).toISOString().slice(0,10);
+}
+function diffDays(a, b){
+  const pa = a.split('-').map(Number), pb = b.split('-').map(Number);
+  return Math.round((Date.UTC(pb[0],pb[1]-1,pb[2]) - Date.UTC(pa[0],pa[1]-1,pa[2])) / 864e5);
+}
+function mondayOf(key){
+  const [y,m,d] = key.split('-').map(Number);
+  const dow = (new Date(Date.UTC(y,m-1,d)).getUTCDay() + 6) % 7;
+  return addDays(key, -dow);
+}
+const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function fmtDM(key){ return key.slice(8,10) + '/' + key.slice(5,7); }
+function fmtMonth(ym){ return MESES[+ym.slice(5,7)-1] + ' ' + ym.slice(2,4); }
+function fmtLong(key){
+  return new Date(key + 'T12:00:00Z').toLocaleDateString('es-CL', {weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC'});
+}
+
+/* fecha de una tarjeta -> 'YYYY-MM-DD' (hora local de Santiago) */
+function toDayKey(v){
+  if(!v) return null;
+  const s = String(v).trim();
+  if(/T.*(Z|[+-]\d\d:?\d\d)$/.test(s)){
+    const d = new Date(s);
+    return isNaN(d) ? null : d.toLocaleDateString('en-CA', {timeZone:TZ});
+  }
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return m[1] + '-' + m[2] + '-' + m[3];
+  const d = new Date(s);
+  return isNaN(d) ? null : d.toLocaleDateString('en-CA', {timeZone:TZ});
+}
+function nameKey(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim().toUpperCase(); }
+function nameShow(s){
+  return String(s||'').replace(/\s+/g,' ').trim().toLowerCase().replace(/(^|[\s\-'])(\p{L})/gu, (_, a, b) => a + b.toUpperCase());
+}
+
+/* =====================================================================
+   Normalización: cada tarjeta recibida -> registro simple
+   ===================================================================== */
+function normStop(r){
+  const day = toDayKey(r.fecha) || toDayKey(r.recibidoEn);
+  if(!day) return null;
+  const acts = [];
+  const secs = r.secciones || {};
+  Object.keys(secs).forEach(id => {
+    const items = (secs[id] && secs[id].itemsMarcados) || [];
+    items.forEach(t => { if(t) acts.push({sec:id, text:String(t)}); });
+  });
+  return { tipo:'stop', day, persona:String(r.observador||'').trim(), n:r.correlativo, acts };
+}
+function normSeg(r){
+  const day = toDayKey(r.fechaAviso) || toDayKey(r.recibidoEn);
+  if(!day) return null;
+  const conds = (Array.isArray(r.condicionDetectada) ? r.condicionDetectada : []).filter(Boolean).map(String);
+  return { tipo:'seg', day, persona:String(r.autorAviso||'').trim(), n:r.correlativo, conds };
+}
+function normalizeAll(raw){
+  const out = { stop:[], seg:[] };
+  (raw.stop || []).forEach(r => { const n = normStop(r); if(n) out.stop.push(n); });
+  (raw.seg  || []).forEach(r => { const n = normSeg(r);  if(n) out.seg.push(n); });
+  return out;
+}
+
+/* =====================================================================
+   Carga de datos
+   ===================================================================== */
+const state = {
+  preset:'30', from:'', to:'', tipo:'all',
+  raw:{ stop:null, seg:null },      // respuesta cruda por origen (null = no disponible)
+  errors:{},                         // origen -> mensaje
+  fromCache:false, cacheStamp:null,
+  demo:false, loading:false, updatedAt:null
+};
+
+function jsonp(url){
+  return new Promise((resolve, reject) => {
+    const cb = 'cb_' + Date.now() + '_' + Math.floor(Math.random()*1e6);
+    const sc = document.createElement('script');
+    const done = () => { delete window[cb]; sc.remove(); clearTimeout(t); };
+    window[cb] = d => { done(); resolve(d); };
+    sc.onerror = () => { done(); reject(new Error('jsonp')); };
+    sc.src = url + '&callback=' + cb;
+    document.body.appendChild(sc);
+    const t = setTimeout(() => { done(); reject(new Error('timeout')); }, 8000);
+  });
+}
+
+async function fetchSource(key){
+  const url = SOURCES[key].url + '?accion=listar&action=listar&_=' + Date.now();
+  let data;
+  let res = null;
+  try{
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 15000);
+    res = await fetch(url, {signal:ctl.signal, cache:'no-store'});
+    clearTimeout(t);
+  }catch(e){
+    try{ data = await jsonp(url); }
+    catch(e2){ throw new Error('No se pudo conectar con el script de Google'); }
+  }
+  if(res){
+    try{ data = await res.json(); }
+    catch(e){ throw new Error('El script respondió algo que no es el listado (¿falta agregar el código de listar y publicar una nueva versión?)'); }
+  }
+  const arr = Array.isArray(data) ? data
+            : (data && data.ok === true && Array.isArray(data.tarjetas)) ? data.tarjetas : null;
+  if(!arr){
+    throw new Error(data && data.error ? 'El script respondió: ' + data.error
+                                       : 'El script todavía no entrega el listado de tarjetas');
+  }
+  return arr;
+}
+
+function readCache(){ try{ return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); }catch(e){ return null; } }
+function writeCache(){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify({t:Date.now(), raw:state.raw})); }catch(e){} }
+
+async function loadAll(){
+  if(state.demo) return;
+  state.loading = true; setLoading(true);
+  const keys = ['stop','seg'];
+  const results = await Promise.allSettled(keys.map(fetchSource));
+  state.errors = {};
+  let anyOk = false;
+  const cache = readCache();
+  state.fromCache = false;
+  results.forEach((r, i) => {
+    const k = keys[i];
+    if(r.status === 'fulfilled'){ state.raw[k] = r.value; anyOk = true; }
+    else{
+      state.errors[k] = r.reason && r.reason.message ? r.reason.message : 'Error desconocido';
+      if(cache && cache.raw && Array.isArray(cache.raw[k])){ state.raw[k] = cache.raw[k]; state.fromCache = true; state.cacheStamp = cache.t; }
+      else state.raw[k] = null;
+    }
+  });
+  if(anyOk) writeCache();
+  state.updatedAt = new Date();
+  state.loading = false; setLoading(false);
+  render();
+}
+
+function setLoading(on){ $('#dash').classList.toggle('loading', on); }
+
+/* ---------- datos de ejemplo (formas reales de cada payload) ---------- */
+function demoRaw(){
+  let seed = 20261016;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const pick = (arr, w) => { const tot = w.reduce((a,b)=>a+b,0); let x = rnd()*tot; for(let i=0;i<arr.length;i++){ x -= w[i]; if(x<=0) return arr[i]; } return arr[arr.length-1]; };
+  const people = ['Cristian Modinger','María González','Pedro Soto','Ana Pérez','Luis Rojas','Camila Díaz','Jorge Fuentes','Sofía Muñoz','Diego Araya','Valentina Núñez'];
+  const wStop = [10,8,7,6,5,4,3,3,2,1], wSeg = [4,9,6,3,7,5,2,3,1,1];
+  const ACTS = {
+    reacciones:['Ajustan o agregan algo a su equipo de protección personal','Cambian de posición súbitamente','Reacomodan su trabajo','Dejan de trabajar o se alejan del lugar'],
+    epp:['Cabeza','Ojos y cara','Oídos','Aparato respiratorio','Brazos y manos','Tronco','Piernas y pies'],
+    posiciones:['Golpear contra objetos','Ser golpeado por objetos','Quedar atrapado sobre, entre o dentro de objetos','Caídas','Contacto con temperaturas extremas','Contacto con corriente eléctrica','Sobre-esfuerzo','Movimientos repetitivos','Posiciones incómodas y posturas estáticas'],
+    herramientas:['Empleo de herramientas y equipo inadecuados para el trabajo','Empleo en forma incorrecta de herramientas y equipo','Empleo de herramientas y equipo que estén en condiciones inseguras'],
+    procedimientos:['Procedimientos inadecuados','Procedimientos no son conocidos ni entendidos','Procedimientos no se cumplen','Estándares de orden y limpieza inadecuados','Estándares de orden y limpieza no se cumple']
+  };
+  const secIds = Object.keys(ACTS);
+  const wAct = {reacciones:[3,2,2,1], epp:[6,3,2,1,4,2,3], posiciones:[4,3,2,9,1,1,5,3,6], herramientas:[2,5,3], procedimientos:[4,3,7,6,8]};
+  const wSec = [2,5,6,2,4];
+  const today = todayKey();
+  const stop = [], seg = [];
+  let cS = 120, cG = 60;
+  for(let d = 119; d >= 0; d--){
+    const day = addDays(today, -d);
+    const dow = (new Date(day + 'T12:00:00Z').getUTCDay() + 6) % 7;
+    if(dow >= 6 && rnd() < .8) continue;
+    const nStop = Math.floor(rnd()*4) + (dow < 5 ? 1 : 0);
+    const nSeg  = Math.floor(rnd()*3) + (rnd() < .4 ? 1 : 0);
+    for(let i=0;i<nStop;i++){
+      const secciones = {};
+      secIds.forEach(id => { secciones[id] = {itemsMarcados:[], todoSeguro:false}; });
+      const k = Math.floor(rnd()*4);
+      for(let a=0;a<k;a++){
+        const sid = pick(secIds, wSec);
+        const it = pick(ACTS[sid], wAct[sid]);
+        if(!secciones[sid].itemsMarcados.includes(it)) secciones[sid].itemsMarcados.push(it);
+      }
+      const hh = String(6 + Math.floor(rnd()*15)).padStart(2,'0');
+      stop.push({correlativo:++cS, fecha: day + ' ' + hh + ':' + String(Math.floor(rnd()*60)).padStart(2,'0'),
+                 observador: pick(people, wStop).toUpperCase(), secciones});
+    }
+    for(let i=0;i<nSeg;i++){
+      const conds = []; const k = rnd() < .75 ? 1 : 2;
+      for(let a=0;a<k;a++){ const c = pick(CONDICIONES, [3,5,2,3,4,2,3,2]); if(!conds.includes(c)) conds.push(c); }
+      seg.push({correlativo:++cG, fechaAviso:day, autorAviso:pick(people, wSeg), condicionDetectada:conds});
+    }
+  }
+  return {stop, seg};
+}
+
+/* =====================================================================
+   Filtros
+   ===================================================================== */
+function allDays(norm){
+  const days = [...norm.stop, ...norm.seg].map(r => r.day).sort();
+  return days.length ? {min:days[0], max:days[days.length-1]} : null;
+}
+function applyPreset(p, norm){
+  const t = todayKey();
+  state.preset = p;
+  if(p === 'today'){ state.from = t; state.to = t; }
+  else if(p === '7'){ state.from = addDays(t,-6); state.to = t; }
+  else if(p === '30'){ state.from = addDays(t,-29); state.to = t; }
+  else if(p === '90'){ state.from = addDays(t,-89); state.to = t; }
+  else if(p === 'month'){ state.from = t.slice(0,8) + '01'; state.to = t; }
+  else if(p === 'all'){
+    const r = norm && allDays(norm);
+    state.from = r ? r.min : addDays(t,-29);
+    state.to = r && r.max > t ? r.max : t;
+  }
+  syncFilterUI();
+}
+function syncFilterUI(){
+  $('#dFrom').value = state.from; $('#dTo').value = state.to;
+  document.querySelectorAll('#segPreset button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.p === state.preset)));
+  document.querySelectorAll('#segTipo button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === state.tipo)));
+}
+function savePrefs(){ try{ localStorage.setItem(PREFS_KEY, JSON.stringify({preset:state.preset, tipo:state.tipo, from:state.from, to:state.to})); }catch(e){} }
+function loadPrefs(){ try{ return JSON.parse(localStorage.getItem(PREFS_KEY) || 'null'); }catch(e){ return null; } }
+
+/* =====================================================================
+   Tooltip (una sola; el contenido siempre entra como texto)
+   ===================================================================== */
+const tip = $('#tip');
+function showTip(data, x, y){
+  tip.textContent = '';
+  if(data.title) tip.append(el('div', {class:'tt'}, data.title));
+  (data.rows || []).forEach(r => {
+    const row = el('div', {class:'tr'});
+    if(r.color) row.append(el('i', {class:'ln', style:'background:' + r.color}));
+    row.append(el('b', null, r.value), el('span', null, r.label));
+    tip.append(row);
+  });
+  tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let left = x + 14, top = y - h - 12;
+  if(left + w > window.innerWidth - 8) left = x - w - 14;
+  if(left < 8) left = 8;
+  if(top < 8) top = y + 18;
+  tip.style.left = left + 'px'; tip.style.top = top + 'px';
+}
+function hideTip(){ tip.style.display = 'none'; }
+function bindTips(root){
+  root.addEventListener('pointermove', e => {
+    const t = e.target.closest('[data-tip]');
+    if(t && t._tip) showTip(t._tip, e.clientX, e.clientY); else hideTip();
+  });
+  root.addEventListener('pointerleave', e => { if(e.pointerType !== 'touch') hideTip(); });
+  root.addEventListener('focusin', e => {
+    const t = e.target.closest('[data-tip]');
+    if(t && t._tip){ const r = t.getBoundingClientRect(); showTip(t._tip, r.left + Math.min(r.width/2, 120), r.top); }
+  });
+  root.addEventListener('focusout', hideTip);
+}
+document.addEventListener('pointerdown', e => { if(!e.target.closest('[data-tip]')) hideTip(); });
+window.addEventListener('scroll', hideTip, {passive:true});
+['pDay','pPerson','pActs','pCond'].forEach(id => bindTips($('#' + id)));
+
+/* =====================================================================
+   Gráficos
+   ===================================================================== */
+const COL = { stop:'var(--s-stop)', seg:'var(--s-seg)' };
+const NAME = { stop:'Tarjeta STOP', seg:'Tarjeta de Seguridad' };
+
+function niceScale(max){
+  const steps = [1,2,5,10,20,25,50,100,200,250,500,1000,2000,5000];
+  let step = steps[steps.length-1];
+  for(const s of steps){ if(max / s <= 5){ step = s; break; } }
+  return {step, top: Math.max(step, Math.ceil(max / step) * step)};
+}
+function topRounded(x, y, w, h, r){
+  r = Math.min(r, w/2, h);
+  return 'M' + x + ',' + (y+h) + ' L' + x + ',' + (y+r) + ' Q' + x + ',' + y + ' ' + (x+r) + ',' + y +
+         ' L' + (x+w-r) + ',' + y + ' Q' + (x+w) + ',' + y + ' ' + (x+w) + ',' + (y+r) + ' L' + (x+w) + ',' + (y+h) + ' Z';
+}
+function legendFor(box, types){
+  box.textContent = '';
+  if(types.length < 2) return;
+  types.forEach(t => box.append(el('span', null, el('i', {class:'sw', style:'background:' + COL[t]}), NAME[t])));
+}
+function emptyBox(msg){ return el('div', {class:'empty'}, msg || 'Sin tarjetas en este período.'); }
+
+function renderTable(box, headers, rows){
+  box.textContent = '';
+  const t = el('table', {class:'t'});
+  const thead = el('thead'); const trh = el('tr');
+  headers.forEach((h, i) => trh.append(el('th', {class: i ? 'n' : ''}, h)));
+  thead.append(trh); t.append(thead);
+  const tb = el('tbody');
+  rows.forEach(r => { const tr = el('tr'); r.forEach((c, i) => tr.append(el('td', {class: i ? 'n' : ''}, c))); tb.append(tr); });
+  t.append(tb); box.append(t);
+}
+
+/* ---------- 1) Tarjetas por día / semana / mes (columnas apiladas) ---------- */
+function bucketsFor(from, to, recs){
+  const span = diffDays(from, to) + 1;
+  const gran = span <= 62 ? 'day' : span <= 400 ? 'week' : 'month';
+  const keyOf = d => gran === 'day' ? d : gran === 'week' ? mondayOf(d) : d.slice(0,7);
+  const map = new Map(); const order = [];
+  const add = k => { if(!map.has(k)){ map.set(k, {key:k, stop:0, seg:0}); order.push(k); } };
+  if(gran === 'day'){ for(let d = from; d <= to; d = addDays(d,1)) add(d); }
+  else if(gran === 'week'){ for(let d = mondayOf(from); d <= to; d = addDays(d,7)) add(d); }
+  else{
+    let [y,m] = from.slice(0,7).split('-').map(Number); const end = to.slice(0,7);
+    for(;;){ const k = y + '-' + String(m).padStart(2,'0'); add(k); if(k >= end) break; m++; if(m > 12){ m = 1; y++; } }
+  }
+  recs.forEach(r => { const b = map.get(keyOf(r.day)); if(b) b[r.tipo]++; });
+  return {gran, list: order.map(k => map.get(k))};
+}
+function bucketLabel(gran, k){ return gran === 'day' ? fmtDM(k) : gran === 'week' ? fmtDM(k) : fmtMonth(k); }
+function bucketTitle(gran, k){
+  if(gran === 'day') return fmtLong(k);
+  if(gran === 'week') return 'Semana del ' + fmtDM(k) + ' al ' + fmtDM(addDays(k,6));
+  return fmtMonth(k);
+}
+
+let lastDay = null;
+function renderDay(ctx){
+  lastDay = ctx;
+  const box = $('#pDay'); box.textContent = '';
+  const {gran, list} = bucketsFor(ctx.from, ctx.to, ctx.recs);
+  const total = list.reduce((a,b) => a + b.stop + b.seg, 0);
+  const gname = gran === 'day' ? 'día' : gran === 'week' ? 'semana' : 'mes';
+  $('#tDay').textContent = 'Tarjetas por ' + gname;
+  $('#sDay').textContent = gran === 'day' ? 'Cantidad de tarjetas emitidas cada día'
+    : gran === 'week' ? 'Rango largo: se agrupa por semana (cada columna parte el lunes)' : 'Rango muy largo: se agrupa por mes';
+  legendFor($('#lgDay'), ctx.types);
+
+  renderTable($('#tDayTbl'), [gran === 'day' ? 'Día' : gran === 'week' ? 'Semana (lunes)' : 'Mes'].concat(ctx.types.map(t => NAME[t])).concat(ctx.types.length > 1 ? ['Total'] : []),
+    list.map(b => [bucketTitle(gran, b.key)].concat(ctx.types.map(t => b[t])).concat(ctx.types.length > 1 ? [b.stop + b.seg] : [])));
+
+  if(!total){ box.append(emptyBox()); return; }
+
+  const W = Math.max(280, box.clientWidth), H = 250;
+  const m = {l:34, r:8, t:20, b:28};
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const max = Math.max(1, ...list.map(b => b.stop + b.seg));
+  const {step, top} = niceScale(max);
+  const svg = sv('svg', {class:'chart', viewBox:'0 0 ' + W + ' ' + H, role:'img',
+    'aria-label':'Columnas de tarjetas por ' + gname + '. Total: ' + total + '. Use "Ver tabla" para el detalle.'});
+  const y = v => m.t + ph - (v / top) * ph;
+
+  for(let v = 0; v <= top; v += step){
+    svg.append(sv('line', {x1:m.l, x2:W - m.r, y1:y(v), y2:y(v), stroke: v === 0 ? 'var(--axis)' : 'var(--grid)', 'stroke-width':1}));
+    const tx = sv('text', {x:m.l - 6, y:y(v) + 4, 'text-anchor':'end', 'font-size':11, fill:'var(--muted)'});
+    tx.textContent = v >= 1000 ? (v / 1000) + 'K' : v; svg.append(tx);
+  }
+  const n = list.length, band = pw / n;
+  const bw = Math.max(2, Math.min(24, band * 0.7));
+  const every = Math.max(1, Math.ceil(46 / band));
+  const maxIdx = list.reduce((bi, b, i) => (b.stop + b.seg) > (list[bi].stop + list[bi].seg) ? i : bi, 0);
+
+  list.forEach((b, i) => {
+    const cx = m.l + band * i + band / 2, x0 = cx - bw / 2;
+    if(i % every === 0){
+      const tx = sv('text', {x:cx, y:H - 8, 'text-anchor':'middle', 'font-size':11, fill:'var(--muted)'});
+      tx.textContent = bucketLabel(gran, b.key); svg.append(tx);
+    }
+    const h1 = (b.stop / top) * ph, h2 = (b.seg / top) * ph;
+    const hasBoth = b.stop > 0 && b.seg > 0;
+    let base = m.t + ph;
+    if(b.stop > 0){
+      const hh = Math.max(1, h1);
+      const isTop = b.seg === 0;
+      svg.append(isTop ? sv('path', {d:topRounded(x0, base - hh, bw, hh, 4), fill:COL.stop})
+                       : sv('rect', {x:x0, y:base - hh, width:bw, height:hh, fill:COL.stop}));
+      base -= hh + (hasBoth ? 2 : 0);
+    }
+    if(b.seg > 0){
+      const hh = Math.max(1, h2);
+      svg.append(sv('path', {d:topRounded(x0, base - hh, bw, hh, 4), fill:COL.seg}));
+    }
+    if(i === maxIdx){
+      const tx = sv('text', {x:cx, y:y(b.stop + b.seg) - 6, 'text-anchor':'middle', 'font-size':11.5, 'font-weight':700, fill:'var(--text2)'});
+      tx.textContent = b.stop + b.seg; svg.append(tx);
+    }
+    const hit = sv('rect', {class:'hit', 'data-tip':'1', x:m.l + band * i, y:m.t, width:band, height:ph + 2,
+      tabindex: n <= 31 ? '0' : '-1', 'aria-label': bucketTitle(gran, b.key) + ': ' + (b.stop + b.seg) + ' tarjetas'});
+    const rows = ctx.types.map(t => ({color:COL[t], value:b[t], label:NAME[t]}));
+    if(ctx.types.length > 1) rows.push({value:b.stop + b.seg, label:'Total'});
+    hit._tip = {title:bucketTitle(gran, b.key), rows};
+    svg.append(hit);
+  });
+  box.append(svg);
+}
+
+/* ---------- barras horizontales (HTML) ---------- */
+function hbars(box, rows, opt){
+  box.textContent = '';
+  if(!rows.length){ box.append(emptyBox(opt && opt.empty)); return; }
+  const max = Math.max(1, ...rows.map(r => r.total));
+  const list = el('div', {class:'hlist', role:'list'});
+  rows.forEach(r => {
+    const row = el('div', {class:'hrow' + (r.total === 0 ? ' zero' : ''), role:'listitem', tabindex:'0', 'data-tip':'1'});
+    row.append(el('div', {class:'hl', title:r.label}, r.label));
+    const tr = el('div', {class:'tr'});
+    const hb = el('div', {class:'hb', style:'--p:' + (r.total / max)});
+    if(r.total === 0) hb.style.display = 'none';
+    r.segs.forEach(s => { if(s.n > 0) hb.append(el('i', {style:'flex:' + s.n + ';background:' + s.color})); });
+    tr.append(hb, el('span', {class:'hv'}, fmtN(r.total)));
+    row.append(tr);
+    row._tip = r.tip;
+    list.append(row);
+  });
+  box.append(list);
+}
+
+/* ---------- 2) Tarjetas por persona ---------- */
+function renderPerson(ctx){
+  const map = new Map();
+  ctx.recs.forEach(r => {
+    const k = nameKey(r.persona) || '(SIN NOMBRE)';
+    if(!map.has(k)) map.set(k, {label: r.persona ? nameShow(r.persona) : 'Sin nombre', stop:0, seg:0});
+    map.get(k)[r.tipo]++;
+  });
+  const all = [...map.values()].map(p => Object.assign(p, {total:p.stop + p.seg})).sort((a, b) => b.total - a.total || a.label.localeCompare(b.label, 'es'));
+  const TOP = 10;
+  const head = all.slice(0, TOP), tail = all.slice(TOP);
+  legendFor($('#lgPerson'), ctx.types);
+  $('#sPerson').textContent = all.length
+    ? (all.length === 1 ? '1 persona' : all.length + ' personas') + (tail.length ? ' · se muestran las 10 con más tarjetas' : '')
+    : 'Quién emitió cada tarjeta';
+
+  const rows = head.map(p => ({
+    label:p.label, total:p.total,
+    segs: ctx.types.map(t => ({n:p[t], color:COL[t]})),
+    tip:{title:p.label, rows: ctx.types.map(t => ({color:COL[t], value:p[t], label:NAME[t]})).concat(ctx.types.length > 1 ? [{value:p.total, label:'Total'}] : [])}
+  }));
+  if(tail.length){
+    const o = {stop:0, seg:0}; tail.forEach(p => { o.stop += p.stop; o.seg += p.seg; });
+    const tot = o.stop + o.seg;
+    rows.push({label:'Otras ' + tail.length + ' personas', total:tot, segs:[{n:tot, color:'var(--s-other)'}],
+      tip:{title:'Otras ' + tail.length + ' personas', rows: ctx.types.map(t => ({color:COL[t], value:o[t], label:NAME[t]})).concat(ctx.types.length > 1 ? [{value:tot, label:'Total'}] : [])}});
+  }
+  hbars($('#pPerson'), rows);
+  renderTable($('#tPersonTbl'), ['Persona'].concat(ctx.types.map(t => NAME[t])).concat(ctx.types.length > 1 ? ['Total'] : []),
+    all.map(p => [p.label].concat(ctx.types.map(t => p[t])).concat(ctx.types.length > 1 ? [p.total] : [])));
+}
+
+/* ---------- 3) Actos inseguros más detectados (STOP) ---------- */
+function renderActs(recs){
+  const map = new Map(); let totalActs = 0;
+  recs.forEach(r => r.acts.forEach(a => {
+    const label = (a.sec === 'epp' ? 'EPP: ' : '') + a.text;
+    const k = a.sec + '|' + a.text;
+    if(!map.has(k)) map.set(k, {label, sec:SECTION_TITLES[a.sec] || a.sec, n:0});
+    map.get(k).n++; totalActs++;
+  }));
+  const all = [...map.values()].sort((a, b) => b.n - a.n || a.label.localeCompare(b.label, 'es'));
+  const head = all.slice(0, 10);
+  $('#sActs').textContent = totalActs
+    ? 'Tarjeta STOP · ' + fmtN(totalActs) + ' actos inseguros marcados en ' + fmtN(recs.length) + ' tarjetas' + (all.length > 10 ? ' · top 10' : '')
+    : 'Tarjeta STOP';
+  hbars($('#pActs'), head.map(a => ({
+    label:a.label, total:a.n, segs:[{n:a.n, color:COL.stop}],
+    tip:{title:a.sec, rows:[{color:COL.stop, value:a.n, label:a.label + ' · ' + Math.round(a.n / totalActs * 100) + ' % de los actos'}]}
+  })), {empty:'Sin actos inseguros marcados en este período.'});
+  renderTable($('#tActsTbl'), ['Acto inseguro', 'Sección', 'Veces'], all.map(a => [a.label, a.sec, a.n]));
+}
+
+/* ---------- 4) Condiciones detectadas (Seguridad) ---------- */
+function renderCond(recs){
+  const map = new Map(CONDICIONES.map(c => [c, 0]));
+  let total = 0;
+  recs.forEach(r => r.conds.forEach(c => { map.set(c, (map.get(c) || 0) + 1); total++; }));
+  const all = [...map.entries()].map(([label, n]) => ({label, n})).sort((a, b) => b.n - a.n || a.label.localeCompare(b.label, 'es'));
+  $('#sCond').textContent = 'Tarjeta de Seguridad · ' + fmtN(total) + ' condiciones en ' + fmtN(recs.length) + ' tarjetas';
+  hbars($('#pCond'), all.map(c => ({
+    label:c.label, total:c.n, segs:[{n:c.n, color:COL.seg}],
+    tip:{title:c.label, rows:[{color:COL.seg, value:c.n, label: total ? Math.round(c.n / total * 100) + ' % de las condiciones' : 'sin casos'}]}
+  })));
+  renderTable($('#tCondTbl'), ['Condición detectada', 'Veces'], all.map(c => [c.label, c.n]));
+}
+
+/* =====================================================================
+   Render general
+   ===================================================================== */
+function currentNorm(){
+  const raw = state.demo ? state.demoRaw : state.raw;
+  return normalizeAll({stop: raw.stop || [], seg: raw.seg || []});
+}
+function inRange(r, from, to){ return r.day >= from && r.day <= to; }
+
+function setKpi(idV, idD, val, delta){ $(idV).textContent = val; $(idD).textContent = delta || ''; }
+
+function render(){
+  const norm = currentNorm();
+  if(state.preset === 'all') applyPreset('all', norm);
+  const {from, to, tipo} = state;
+  const wantStop = tipo !== 'seg', wantSeg = tipo !== 'stop';
+  const types = [wantStop && 'stop', wantSeg && 'seg'].filter(Boolean);
+
+  const stopR = wantStop ? norm.stop.filter(r => inRange(r, from, to)) : [];
+  const segR  = wantSeg  ? norm.seg.filter(r => inRange(r, from, to)) : [];
+  const recs = stopR.concat(segR);
+
+  /* KPIs */
+  const people = new Set(recs.map(r => nameKey(r.persona)).filter(Boolean));
+  let delta = '';
+  if(state.preset !== 'all'){
+    const len = diffDays(from, to) + 1, pTo = addDays(from, -1), pFrom = addDays(from, -len);
+    const prev = (wantStop ? norm.stop : []).concat(wantSeg ? norm.seg : []).filter(r => inRange(r, pFrom, pTo)).length;
+    if(prev > 0){
+      const pct = Math.round((recs.length - prev) / prev * 100);
+      delta = (pct > 0 ? '▲ ' : pct < 0 ? '▼ ' : '= ') + Math.abs(pct) + ' % vs período anterior (' + fmtN(prev) + ')';
+    }else if(recs.length > 0){ delta = 'Sin tarjetas en el período anterior'; }
+  }
+  setKpi('#vTotal', '#dTotal', fmtN(recs.length), delta);
+  setKpi('#vStop', '#dStop', fmtN(stopR.length), stopR.length ? fmtN(stopR.reduce((a, r) => a + r.acts.length, 0)) + ' actos inseguros marcados' : '');
+  setKpi('#vSeg', '#dSeg', fmtN(segR.length), segR.length ? fmtN(segR.reduce((a, r) => a + r.conds.length, 0)) + ' condiciones detectadas' : '');
+  setKpi('#vPeople', '#dPeople', fmtN(people.size), '');
+  $('#kStop').hidden = !wantStop; $('#kSeg').hidden = !wantSeg;
+  $('#cActs').hidden = !wantStop; $('#cCond').hidden = !wantSeg;
+  $('#cDay').classList.toggle('wide', true);
+  $('#cCond').classList.toggle('wide', !wantStop);
+  $('#cActs').classList.toggle('wide', !wantSeg);
+  $('#cPerson').classList.toggle('wide', false);
+
+  const ctx = {from, to, recs, types};
+  renderDay(ctx);
+  renderPerson(ctx);
+  if(wantStop) renderActs(stopR);
+  if(wantSeg)  renderCond(segR);
+
+  renderStatus();
+}
+
+function renderStatus(){
+  $('#demoChip').hidden = !state.demo;
+  $('#btnExitDemo').hidden = !state.demo;
+  $('#updated').textContent = state.demo ? '' : state.updatedAt ? 'Actualizado ' + state.updatedAt.toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit', timeZone:TZ}) : '';
+  const box = $('#notice'); box.textContent = '';
+  if(state.demo) return;
+  const errKeys = Object.keys(state.errors);
+  if(!errKeys.length) return;
+  const bothFail = errKeys.length === 2;
+  const noData = k => state.raw[k] === null;
+  const lines = errKeys.map(k => SOURCES[k].label + ': ' + state.errors[k] + (noData(k) ? '' : ' (se muestran los últimos datos guardados en este dispositivo)'));
+  const acts = el('div', {class:'acts'});
+  const b1 = el('button', {class:'btn-sm', type:'button'}, 'Reintentar'); b1.onclick = loadAll;
+  acts.append(b1);
+  if(errKeys.some(noData)){
+    const b2 = el('button', {class:'btn-sm', type:'button'}, 'Ver con datos de ejemplo');
+    b2.onclick = enterDemo; acts.append(b2);
+  }
+  const n = el('div', {class:'notice' + (bothFail && errKeys.every(noData) ? ' err' : '')});
+  n.append(el('div', {class:'msg'}, lines.join(' — ')), acts);
+  box.append(n);
+}
+
+function enterDemo(){
+  state.demo = true; state.demoRaw = demoRaw();
+  if(state.preset === 'all') applyPreset('all', currentNorm());
+  render();
+}
+function exitDemo(){ state.demo = false; render(); loadAll(); }
+
+/* =====================================================================
+   Eventos
+   ===================================================================== */
+$('#segPreset').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  applyPreset(b.dataset.p, currentNorm()); savePrefs(); render();
+});
+$('#segTipo').addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  state.tipo = b.dataset.t; syncFilterUI(); savePrefs(); render();
+});
+function onDates(){
+  let f = $('#dFrom').value, t = $('#dTo').value;
+  if(!f || !t) return;
+  if(f > t){ if(document.activeElement === $('#dFrom')) t = f; else f = t; }
+  state.from = f; state.to = t; state.preset = 'custom';
+  syncFilterUI(); savePrefs(); render();
+}
+$('#dFrom').addEventListener('change', onDates);
+$('#dTo').addEventListener('change', onDates);
+
+document.querySelectorAll('.tgl').forEach(b => b.addEventListener('click', () => {
+  const k = b.dataset.for;
+  const map = {day:['pDay','tDayTbl','lgDay'], person:['pPerson','tPersonTbl','lgPerson'], acts:['pActs','tActsTbl'], cond:['pCond','tCondTbl']}[k];
+  const showTable = b.getAttribute('aria-pressed') !== 'true';
+  b.setAttribute('aria-pressed', String(showTable));
+  b.textContent = showTable ? 'Ver gráfico' : 'Ver tabla';
+  $('#' + map[0]).hidden = showTable; $('#' + map[1]).hidden = !showTable;
+  if(map[2]) $('#' + map[2]).hidden = showTable;
+  hideTip();
+  if(!showTable && k === 'day' && lastDay) renderDay(lastDay);
+}));
+
+$('#btnRefresh').addEventListener('click', () => { if(state.demo){ state.demoRaw = demoRaw(); render(); } else loadAll(); });
+$('#btnExitDemo').addEventListener('click', exitDemo);
+
+let rz = null;
+if('ResizeObserver' in window){
+  let lastW = 0;
+  new ResizeObserver(entries => {
+    const w = Math.round(entries[0].contentRect.width);
+    if(w === lastW) return; lastW = w;
+    clearTimeout(rz); rz = setTimeout(() => { if(lastDay && !$('#pDay').hidden) renderDay(lastDay); }, 80);
+  }).observe($('#pDay'));
+}
+
+/* =====================================================================
+   Inicio
+   ===================================================================== */
+(function init(){
+  const prefs = loadPrefs();
+  if(prefs){
+    if(['all','stop','seg'].includes(prefs.tipo)) state.tipo = prefs.tipo;
+    if(prefs.preset === 'custom' && prefs.from && prefs.to){ state.preset = 'custom'; state.from = prefs.from; state.to = prefs.to; }
+    else if(['today','7','30','90','month','all'].includes(prefs.preset)) state.preset = prefs.preset;
+  }
+  if(state.preset === 'custom') syncFilterUI(); else applyPreset(state.preset, null);
+
+  const q = new URLSearchParams(location.search);
+  if(q.get('demo') === '1'){ state.demo = true; state.demoRaw = demoRaw(); if(state.preset === 'all') applyPreset('all', currentNorm()); render(); return; }
+  const cache = readCache();
+  if(cache && cache.raw){ state.raw = cache.raw; }
+  render();
+  loadAll();
+})();
+</script>
 </body>
 </html>
