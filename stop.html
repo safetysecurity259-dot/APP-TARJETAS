@@ -164,6 +164,19 @@
   /* ---- Modo captura para generar PDF (oculta chrome, fuerza ambas páginas) ---- */
   /* (ya no se usa: el PDF ahora se genera desde una plantilla propia, ver JS) */
 
+  /* ---- Firmas ---- */
+  .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:520px){.sig-grid{grid-template-columns:1fr;}}
+  .sig-pad{position:relative;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .sig-pad canvas{display:block;width:100%;aspect-ratio:3/1;touch-action:none;cursor:crosshair;}
+  .sig-pad::after{content:"";position:absolute;left:12px;right:12px;bottom:26%;border-bottom:1px dashed #BDB9AE;pointer-events:none;}
+  .sig-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#A8A59C;pointer-events:none;}
+  .sig-pad.signed .sig-hint{display:none;}
+  .sig-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+  .sig-clear{border:1px solid var(--line);background:#F0EEE8;color:var(--ink);font:inherit;font-size:11px;font-weight:700;padding:6px 12px;border-radius:7px;cursor:pointer;}
+  .sig-name{margin-top:3px;font-size:12px;font-weight:700;min-height:16px;word-break:break-word;}
+  @media print{.sig-clear,.sig-hint{display:none;}}
+
   .backbtn{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;background:rgba(255,255,255,.16);color:#fff;text-decoration:none;font-size:20px;font-weight:700;line-height:1;}
   .backbtn:active{background:rgba(255,255,255,.3);}
 </style>
@@ -283,6 +296,11 @@
         <option>Calidad</option>
         <option>Security</option>
         <option>Limpieza</option>
+        <option>Steering</option>
+        <option>Planificacion y Transporte</option>
+        <option>Logistica Inversa/Recovery</option>
+        <option>Mejora Continua</option>
+        <option>Soporte Operacional</option>
       </select>
     </div>
   </div>
@@ -292,6 +310,22 @@
   <div class="notes">
     <h2>Acción tomada / comentarios</h2>
     <div class="field"><textarea id="mComentarios" placeholder="Describa lo conversado, el acuerdo tomado o la acción correctiva..."></textarea></div>
+  </div>
+
+  <div class="notes">
+    <h2>Firmas</h2>
+    <div class="sig-grid">
+      <div class="sig">
+        <div class="sig-pad"><canvas id="sigObservador" aria-label="Firma del observador"></canvas><span class="sig-hint">Firme aquí</span></div>
+        <div class="sig-foot"><span>Firma del observador</span><button type="button" class="sig-clear" data-sig="obs">Borrar</button></div>
+        <div class="sig-name" id="nameObservador">&nbsp;</div>
+      </div>
+      <div class="sig">
+        <div class="sig-pad"><canvas id="sigObservado" aria-label="Firma del observado"></canvas><span class="sig-hint">Firme aquí</span></div>
+        <div class="sig-foot"><span>Firma del observado</span><button type="button" class="sig-clear" data-sig="obd">Borrar</button></div>
+        <div class="sig-name" id="nameObservado">&nbsp;</div>
+      </div>
+    </div>
   </div>
 
   </div><!-- /page1 -->
@@ -460,6 +494,15 @@ setFechaNow();
 document.getElementById("formCode").textContent = FORM_CODE + " · Digital";
 
 /* ============ Forzar mayúsculas en todo lo que se escribe ============ */
+/* Normaliza un texto: MAYÚSCULAS, sin espacios al inicio/final ni dobles.
+   Así "Juan  Pérez " y "JUAN PÉREZ" quedan iguales y no se duplican. */
+function limpiar_(s, multi){
+  s = String(s == null ? "" : s).toUpperCase();
+  if(multi){
+    return s.split(/\r?\n/).map(l => l.replace(/[ \t]+/g, " ").trim()).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  }
+  return s.replace(/\s+/g, " ").trim();
+}
 function enforceUppercase_(el){
   el.addEventListener("input", ()=>{
     const start = el.selectionStart, end = el.selectionEnd;
@@ -467,6 +510,11 @@ function enforceUppercase_(el){
     if(start !== null && end !== null && el.setSelectionRange){
       el.setSelectionRange(start, end);
     }
+  });
+  // al salir del campo se limpian espacios sobrantes
+  el.addEventListener("blur", ()=>{
+    const limpio = limpiar_(el.value, el.tagName === "TEXTAREA");
+    if(limpio !== el.value){ el.value = limpio; el.dispatchEvent(new Event("input")); }
   });
 }
 document.querySelectorAll(
@@ -657,24 +705,26 @@ function buildPayload(){
       titulo: sec.title,
       todoSeguro: st.safe,
       itemsMarcados: sec.items.filter((_,i)=> st.items[i]).map(it => typeof it==="object" ? it.t : it),
-      otro: st.other || ""
+      otro: limpiar_(st.other)
     };
   });
   return {
     id: "STOP-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
     formulario: FORM_CODE,
     correlativo: correlativo,
-    observador: document.getElementById("mObservador").value,
+    observador: limpiar_(document.getElementById("mObservador").value),
     turno: document.getElementById("mTurno").value,
     area: document.getElementById("mArea").value,
     pasillo: document.getElementById("mPasillo").value,
     areaObservado: document.getElementById("mAreaObservado").value,
-    personaObservada: document.getElementById("mPersona").value,
+    personaObservada: limpiar_(document.getElementById("mPersona").value),
     fecha: document.getElementById("mFecha").value,
-    comentarios: document.getElementById("mComentarios").value,
-    actosSegurosReporte: document.getElementById("p2ActosSeguros").value,
-    actosInsegurosReporte: document.getElementById("p2ActosInseguros").value,
+    comentarios: limpiar_(document.getElementById("mComentarios").value, true),
+    actosSegurosReporte: limpiar_(document.getElementById("p2ActosSeguros").value, true),
+    actosInsegurosReporte: limpiar_(document.getElementById("p2ActosInseguros").value, true),
     totalActosInseguros: totalUnsafe(),
+    firmaObservador: firmaPng_("obs"),
+    firmaObservado: firmaPng_("obd"),
     secciones: bySec
   };
 }
@@ -795,6 +845,22 @@ function pdfPage1Html(payload){
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#6B6862;margin-bottom:5px;">Acción tomada / comentarios</div>
       <div style="border:1px solid #DEDBD2;border-radius:8px;padding:8px 10px;font-size:11px;min-height:40px;white-space:pre-wrap;">${esc_(payload.comentarios) || '—'}</div>
     </div>
+
+    <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+      ${firmaPdfHtml_("Firma del observador", payload.observador, payload.firmaObservador)}
+      ${firmaPdfHtml_("Firma del observado", payload.personaObservada, payload.firmaObservado)}
+    </div>
+  </div>`;
+}
+
+/* Bloque de firma para el PDF: imagen (si firmó) sobre una línea, con el nombre debajo. */
+function firmaPdfHtml_(titulo, nombre, png){
+  const valida = typeof png === "string" && /^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(png);
+  const img = valida ? `<img src="${png}" style="max-width:100%;max-height:52px;display:block;">` : "";
+  return `<div>
+    <div style="height:56px;border-bottom:1.5px solid #1C1C1C;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;">${img}</div>
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6B6862;margin-top:4px;">${titulo}</div>
+    <div style="font-size:11px;font-weight:700;margin-top:1px;">${esc_(nombre) || '—'}</div>
   </div>`;
 }
 
@@ -962,6 +1028,7 @@ function resetCard_(){
   clearInvalidAll_();
   setFechaNow();
   updateStatus();
+  sigReset_();                         // las firmas son de cada tarjeta: se borran
   correlativo = null;
   try{ localStorage.removeItem(CORR_KEY); }catch(e){}
   renderCorr_();
@@ -1057,11 +1124,85 @@ function goToPage2(){
 }
 function goToPage1(){
   document.getElementById("page1").classList.remove("hidden");
+  if(typeof sigRedrawAll_ === "function") requestAnimationFrame(sigRedrawAll_);
   document.getElementById("page2").classList.remove("active");
   document.getElementById("footerPage1").style.display = "flex";
   document.getElementById("footerPage2").style.display = "none";
   window.scrollTo({top:0, behavior:"smooth"});
 }
+/* ============ Firmas del observador y del observado ============ */
+/* Se dibujan con el dedo o el mouse. Los trazos se guardan en coordenadas relativas (0 a 1),
+   así se redibujan bien si cambia el tamaño de la pantalla. */
+const SIG = { obs:{canvas:null, strokes:[]}, obd:{canvas:null, strokes:[]} };
+const SIG_RATIO = 3;   // ancho : alto
+function sigPaint_(ctx, strokes, W, H, lw){
+  ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#1C1C1C"; ctx.lineWidth = lw;
+  strokes.forEach(st=>{
+    ctx.beginPath();
+    st.forEach((p,i)=>{ const x = p[0]*W, y = p[1]*H; if(i) ctx.lineTo(x,y); else ctx.moveTo(x,y); });
+    if(st.length === 1) ctx.lineTo(st[0][0]*W + .1, st[0][1]*H);   // un toque = un punto
+    ctx.stroke();
+  });
+}
+function sigDraw_(k){
+  const s = SIG[k], c = s.canvas, w = c.clientWidth;
+  if(w){                                // si la hoja está oculta no hay ancho: se redibuja al mostrarla
+    const dpr = window.devicePixelRatio || 1;
+    const W = Math.round(w*dpr), H = Math.round(w/SIG_RATIO*dpr);
+    if(c.width !== W || c.height !== H){ c.width = W; c.height = H; }
+    const ctx = c.getContext("2d");
+    ctx.clearRect(0, 0, c.width, c.height);
+    sigPaint_(ctx, s.strokes, c.width, c.height, Math.max(2, 2.2*dpr));
+  }
+  c.parentElement.classList.toggle("signed", s.strokes.length > 0);
+}
+function sigRedrawAll_(){ sigDraw_("obs"); sigDraw_("obd"); }
+function sigPoint_(c, e){
+  const r = c.getBoundingClientRect();
+  return [Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)),
+          Math.min(1, Math.max(0, (e.clientY - r.top) / r.height))];
+}
+function sigBind_(k, id){
+  const c = document.getElementById(id);
+  SIG[k].canvas = c;
+  let cur = null;
+  c.addEventListener("pointerdown", e=>{
+    e.preventDefault();
+    try{ c.setPointerCapture(e.pointerId); }catch(_){}
+    cur = [sigPoint_(c, e)]; SIG[k].strokes.push(cur); sigDraw_(k);
+  });
+  c.addEventListener("pointermove", e=>{
+    if(!cur) return;
+    cur.push(sigPoint_(c, e)); sigDraw_(k);
+  });
+  const fin = ()=>{ cur = null; };
+  c.addEventListener("pointerup", fin);
+  c.addEventListener("pointercancel", fin);
+  c.addEventListener("pointerleave", fin);
+}
+/* Devuelve la firma como imagen PNG (texto), o "" si no firmó. */
+function firmaPng_(k){
+  const s = SIG[k];
+  if(!s.strokes.length) return "";
+  const c = document.createElement("canvas");
+  c.width = 600; c.height = 200;
+  sigPaint_(c.getContext("2d"), s.strokes, 600, 200, 3.5);
+  return c.toDataURL("image/png");
+}
+function sigNames_(){
+  document.getElementById("nameObservador").textContent = document.getElementById("mObservador").value || " ";
+  document.getElementById("nameObservado").textContent  = document.getElementById("mPersona").value || " ";
+}
+function sigReset_(){ SIG.obs.strokes = []; SIG.obd.strokes = []; sigNames_(); sigRedrawAll_(); }
+["mObservador", "mPersona"].forEach(id => document.getElementById(id).addEventListener("input", sigNames_));
+sigBind_("obs", "sigObservador");
+sigBind_("obd", "sigObservado");
+document.querySelectorAll(".sig-clear").forEach(b => b.addEventListener("click", ()=>{
+  SIG[b.dataset.sig].strokes = []; sigDraw_(b.dataset.sig);
+}));
+window.addEventListener("resize", sigRedrawAll_);
+sigNames_(); sigRedrawAll_();
+
 document.getElementById("btnSiguiente").addEventListener("click", goToPage2);
 document.getElementById("btnAtras").addEventListener("click", goToPage1);
 </script>

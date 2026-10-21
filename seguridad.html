@@ -203,9 +203,9 @@ const LOCAL_COUNTER_KEY = 'ts_seguridad_local_hint';
 
 const AREAS = [
   'Despacho a cliente A', 'Despacho a cliente B', 'Despacho a Regiones', 'Losa de consolidación',
-  'PTW', 'MZ', 'Aduana', 'Zona embalaje tecnico', 'Reposición', 'Zona de Residuos',
-  'Recepcion', 'ZDA', 'Despacho a Tienda', 'Control de acceso', 'Logitica inversa', 'ZDR',
-  'Oficinas', 'Camarines', 'Baños', 'Sala de Baterias', 'Tablero electrico', 'Perimetro exterior'
+  'PTW', 'MZ', 'Aduana', 'Zona embalaje técnico', 'Reposición', 'Zona de Residuos',
+  'Recepción', 'ZDA', 'Despacho a Tienda', 'Control de acceso', 'Logística inversa', 'ZDR',
+  'Oficinas', 'Camarines', 'Baños', 'Sala de Baterías', 'Tablero eléctrico', 'Perímetro exterior'
 ];
 const PASILLOS = [
   'No aplica',
@@ -266,6 +266,28 @@ function highlightPill(name){
     document.getElementById(`${name}_pill_${i}`).classList.toggle('checked', input.checked);
   });
 }
+
+/* MAYÚSCULAS en todo lo que se escribe: evita duplicados por "Juan" / "JUAN" / "Juan  " */
+function limpiar_(s, multi){
+  s = String(s == null ? '' : s).toUpperCase();
+  if(multi){
+    return s.split(/\r?\n/).map(l => l.replace(/[ \t]+/g, ' ').trim()).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  return s.replace(/\s+/g, ' ').trim();
+}
+function enforceUppercase_(el){
+  el.addEventListener('input', () => {
+    const a = el.selectionStart, b = el.selectionEnd;
+    el.value = el.value.toUpperCase();
+    if(a !== null && b !== null && el.setSelectionRange) el.setSelectionRange(a, b);
+  });
+  el.addEventListener('blur', () => {
+    const limpio = limpiar_(el.value, el.tagName === 'TEXTAREA');
+    if(limpio !== el.value) el.value = limpio;
+  });
+}
+['autorAviso', 'descripcionAnomalia', 'otroPeligro', 'otroConsecuencia']
+  .forEach(id => enforceUppercase_(document.getElementById(id)));
 
 buildSelect('area', AREAS, 'Selecciona un área');
 buildSelect('pasillo', PASILLOS, 'Selecciona un pasillo');
@@ -353,12 +375,12 @@ function collectData(){
   const radio = name => (document.querySelector(`input[name="${name}"]:checked`)||{}).value || '';
 
   return {
-    area: val('area'), pasillo: val('pasillo'), autorAviso: val('autorAviso'),
-    fechaAviso: val('fechaAviso'), descripcionAnomalia: val('descripcionAnomalia'),
+    area: val('area'), pasillo: val('pasillo'), autorAviso: limpiar_(val('autorAviso')),
+    fechaAviso: val('fechaAviso'), descripcionAnomalia: limpiar_(val('descripcionAnomalia'), true),
     peligroDetectado: checked('peligroDetectado'),
-    otroPeligro: val('otroPeligro'), condicionDetectada: checked('condicionDetectada'),
+    otroPeligro: limpiar_(val('otroPeligro')), condicionDetectada: checked('condicionDetectada'),
     consecuenciaPotencial: checked('consecuenciaPotencial'),
-    otroConsecuencia: val('otroConsecuencia'),
+    otroConsecuencia: limpiar_(val('otroConsecuencia')),
     prioridad: radio('prioridad'),
     accionPropuestaOpciones: checked('accionPropuestaOpciones')
   };
